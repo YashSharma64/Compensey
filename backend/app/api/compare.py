@@ -10,15 +10,15 @@ router = APIRouter()
 @router.post("/compare", response_model=CompareResponse)
 async def compare_companies(request: CompareRequest):
     try:
-        # 1. Load Data
+        # Load Data
         df_a = load_company_data(request.company_a)
         df_b = load_company_data(request.company_b)
         
-        # 2. Feature Engineering
+        # Feature Engineering
         df_a = prepare_features(df_a)
         df_b = prepare_features(df_b)
         
-        # 3. Model Inference
+        # Model Inference
         # Sentiment
         sent_a = get_sentiment_score(df_a['review_text'].fillna(""), models['sentiment'])
         sent_b = get_sentiment_score(df_b['review_text'].fillna(""), models['sentiment'])
@@ -34,14 +34,13 @@ async def compare_companies(request: CompareRequest):
         risk_a = get_risk_score(feat_a, models['anomaly'])
         risk_b = get_risk_score(feat_b, models['anomaly'])
         
-        # 4. Determine Winner (Simple Weighted Score)
-        # Higher sentiment, Higher growth, Lower risk = Better
+        # Determine Winner
         score_a = (sent_a * 0.4) + (growth_a * 0.4) + ((1 - risk_a) * 0.2)
         score_b = (sent_b * 0.4) + (growth_b * 0.4) + ((1 - risk_b) * 0.2)
         
         winner = request.company_a if score_a > score_b else request.company_b
         
-        # 5. Explainability
+        # Explainability
         metrics_a = {'sentiment': sent_a, 'growth': growth_a, 'risk': risk_a}
         metrics_b = {'sentiment': sent_b, 'growth': growth_b, 'risk': risk_b}
         

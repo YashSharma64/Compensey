@@ -9,8 +9,6 @@ from sklearn.pipeline import Pipeline
 from app.services.data_loader import load_company_data
 from app.services.feature_engineer import prepare_features
 
-# ------------------ Paths ------------------
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 
@@ -19,8 +17,6 @@ MODEL_PATHS = {
     "growth": os.path.join(MODELS_DIR, "growth_model.pkl"),
     "anomaly": os.path.join(MODELS_DIR, "anomaly_model.pkl"),
 }
-
-# ------------------ Training ------------------
 
 def train_and_save_models() -> None:
     """
@@ -66,8 +62,6 @@ def train_and_save_models() -> None:
 
     print("Models trained and saved successfully.")
 
-# ------------------ Loading ------------------
-
 def load_models() -> dict:
     """
     Loads models from disk. Trains them if missing.
@@ -91,8 +85,6 @@ def _load_model(name: str):
 
 # Global models (loaded once)
 models = load_models()
-
-# ------------------ Inference Helpers ------------------
 
 def get_sentiment_score(texts, model) -> float:
     """
