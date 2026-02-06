@@ -2,7 +2,7 @@
 
 > **CompenseyAI automates early-stage competitor benchmarking using explainable machine learning models and publicly available data to support data-driven business decisions.**
 
-CompenseyAI is a backend-heavy, full-stack AI/ML competitor intelligence tool that compares two competing companies using publicly available data, applies trained machine learning models to generate explainable insights, and presents the result through a minimal professional UI.
+CompenseyAI is an AI/ML competitor intelligence tool that compares two competing companies using publicly available data, applies trained machine learning models to generate explainable insights, and presents the result through a minimal professional UI.
 
 ---
 
