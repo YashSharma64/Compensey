@@ -1,0 +1,28 @@
+# General
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+.venv
+env/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+build/
+coverage/
+.npm/
+
+# Data and Models (assuming these might be large or local-only)
+# Uncomment these if you want to exclude them, or I will ask the user if unsure.
+# For now, I'll include standard large file types just in case.
+*.h5
+*.pkl
+*.model
