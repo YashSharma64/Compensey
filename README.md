@@ -164,7 +164,7 @@ compensey-ai/
 
 ---
 
-## ✅ Why This Project is Strong
+## ✅ Why Compensey?
 - **Full-stack**: Covers the entire development lifecycle.
 - **ML-first**: Real implementation of Machine Learning, not just API wrappers.
 - **Explainable**: Focuses on the "Why", a critical business requirement.
