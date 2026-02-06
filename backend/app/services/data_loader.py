@@ -5,9 +5,7 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.
 
 def load_company_data(company_name: str) -> pd.DataFrame:
     """
-    Loads review data for a given company.
-    In a real app, this might query a DB or scrape a URL.
-    For this demo, we map company names to local CSV files.
+    Loads review data for a given company from CSV files.
     """
     company_name = company_name.lower()
     

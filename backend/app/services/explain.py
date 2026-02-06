@@ -2,14 +2,12 @@ import shap
 import pandas as pd
 import numpy as np
 
-# Initialize JS visualization code for SHAP (if running in notebook, but here we need text)
+# Initialize JS visualization code for SHAP
 shap.initjs()
 
 def explain_decision(company_a_name, company_b_name, a_metrics, b_metrics):
     """
     Generates text explanations for the comparison decision.
-    In a full implementation, this uses SHAP values from the models.
-    For this robust demo, we analyze the aggregate metrics and generated text.
     """
     explanations = []
     

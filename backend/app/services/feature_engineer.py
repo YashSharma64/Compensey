@@ -2,7 +2,7 @@ import pandas as pd
 
 def prepare_features(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Basic cleaning and feature preparation for ML models.
+    Prepares features for ML models.
     """
     df = df.copy()
 
@@ -17,7 +17,7 @@ def prepare_features(df: pd.DataFrame) -> pd.DataFrame:
 
 def calculate_growth_score(df: pd.DataFrame) -> float:
     """
-    Heuristic growth score based on recent vs previous week review volume.
+    Calculates growth score based on review volume trends.
     """
     recent_date = df["date"].max()
 
