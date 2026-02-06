@@ -104,7 +104,7 @@ The UI should now be accessible (usually at `http://localhost:5173`).
 
 ## 🧱 System Architecture
 
-```mermaid
+```
 graph TD
     Client[Frontend (React)] -->|REST API| API[Backend (FastAPI - Python)]
     API --> ML[ML Layer (scikit-learn models)]
