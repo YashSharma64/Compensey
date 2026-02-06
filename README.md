@@ -19,6 +19,59 @@ The goal of this project is to demonstrate:
 
 ---
 
+## 🚀 Getting Started
+
+Follow these steps to set up and run the project locally.
+
+### Prerequisites
+- Python 3.10+
+- Node.js & npm
+- Git
+
+### 1. Backend Setup (The Core)
+
+The backend handles data processing, ML model training, and the API.
+
+```bash
+# Navigate to the backend directory
+cd backend
+
+# Create a virtual environment (Recommended)
+python3 -m venv venv
+
+# Activate the virtual environment
+# On macOS/Linux:
+source venv/bin/activate
+# On Windows:
+# venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the server
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+*Note: The system will automatically check for data files. If they are empty, it will generate mock data and train the models on startup.*
+
+### 2. Frontend Setup (The UI)
+*(Assuming you are in the project root)*
+
+```bash
+# Navigate to the frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+The UI should now be accessible (usually at `http://localhost:5173`).
+
+---
+
 ## 🧠 Functional Overview
 
 1. **User Selection**: User selects Company A and Company B.
@@ -37,11 +90,9 @@ The goal of this project is to demonstrate:
 ### Backend
 - **Language**: Python 3.10+
 - **Framework**: FastAPI
-- **Data Processing**: Pandas, NumPy
-- **ML / AI**: scikit-learn
-- **Explainability**: SHAP
-- **Database**: SQLite (or CSV-based loading)
-- **Containerization**: Docker
+- **Data & ML**: Pandas, NumPy, scikit-learn
+- **Explainability**: SHAP (requires `matplotlib`, `ipython`)
+- **Runtime**: `uvicorn`
 
 ### Frontend
 - **Framework**: React
@@ -73,9 +124,9 @@ The backend is the core of the system. The frontend serves solely to display the
 ## 📊 Data & ML Strategy
 
 ### Data Sources
-- **Customer Reviews**: CSV datasets (e.g., from Play Store / Kaggle).
+- **Customer Reviews**: CSV datasets located in `data/`.
+- **Mock Data**: If no data is found, the system auto-generates synthetic review data (`debug_models.py` / `ml_models.py` logic) to demonstrate functionality.
 - **Ratings & Metadata**: Used for sentiment and score aggregation.
-- *Why this is acceptable*: Publicly available, real user sentiment, and standard for competitive benchmarking.
 
 ### ML Models
 | Model Type | Algorithm | Output |
@@ -84,7 +135,7 @@ The backend is the core of the system. The frontend serves solely to display the
 | **Growth** | RandomForest or XGBoost | Growth Score |
 | **Stability** | IsolationForest | Anomaly / Risk Signal |
 
-*All models are trained, evaluated, and saved as `.pkl` files.*
+*All models are trained, evaluated, and saved as `.pkl` files in `backend/models/`.*
 
 ### 🔍 Explainability
 **SHAP** (SHapley Additive exPlanations) is used to explain:
@@ -102,37 +153,16 @@ compensey-ai/
 │   ├── app/
 │   │   ├── main.py
 │   │   ├── api/
-│   │   │   └── compare.py
-│   │   ├── services/
-│   │   │   ├── data_loader.py
-│   │   │   ├── feature_engineer.py
-│   │   │   ├── ml_models.py
-│   │   │   └── explain.py
+│   │   ├── services/       # ML & Data Logic
 │   │   └── schemas/
-│   │       └── compare.py
 │   ├── requirements.txt
-│   └── Dockerfile
+│   ├── models/             # Saved .pkl models
+│   └── venv/               # Virtual Environment
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/
-│   │   │   ├── Home.jsx
-│   │   │   └── Result.jsx
-│   │   ├── api/
-│   │   │   └── compare.js
-│   │   ├── components/
-│   │   │   └── Navbar.jsx
-│   │   ├── App.jsx
-│   │   └── main.jsx
 │   ├── package.json
 │   └── vite.config.js
-├── data/
-│   ├── company_a_reviews.csv
-│   ├── company_b_reviews.csv
-│   └── README.md
-└── models/
-    ├── sentiment_model.pkl
-    ├── growth_model.pkl
-    └── anomaly_model.pkl
+└── data/                   # Data Store (CSV)
 ```
 
 ---
