@@ -14,21 +14,30 @@ def explain_decision(company_a_name, company_b_name, a_metrics, b_metrics):
     explanations = []
     
     # Sentiment Explanation
-    if a_metrics['sentiment'] > b_metrics['sentiment']:
-        diff = (a_metrics['sentiment'] - b_metrics['sentiment']) * 100
+    sent_a = float(a_metrics['sentiment'])
+    sent_b = float(b_metrics['sentiment'])
+    
+    if sent_a > sent_b:
+        diff = (sent_a - sent_b) * 100
         explanations.append(f"{company_a_name} has {diff:.1f}% higher positive sentiment in customer reviews.")
     else:
-        diff = (b_metrics['sentiment'] - a_metrics['sentiment']) * 100
+        diff = (sent_b - sent_a) * 100
         explanations.append(f"{company_b_name} leads in customer satisfaction by {diff:.1f}%.")
 
     # Growth Explanation
-    if a_metrics['growth'] > b_metrics['growth']:
+    growth_a = float(a_metrics['growth'])
+    growth_b = float(b_metrics['growth'])
+    
+    if growth_a > growth_b:
         explanations.append(f"{company_a_name} shows stronger recent traction and review volume growth.")
     else:
         explanations.append(f"{company_b_name} is accelerating faster based on review trends.")
 
     # Stability Explanation
-    if a_metrics['risk'] < b_metrics['risk']:
+    risk_a = float(a_metrics['risk'])
+    risk_b = float(b_metrics['risk'])
+    
+    if risk_a < risk_b:
         explanations.append(f"{company_a_name} has fewer anomalous review patterns, indicating higher stability.")
     else:
         explanations.append(f"{company_b_name} shows more consistent user feedback patterns.")
