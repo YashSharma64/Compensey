@@ -8,7 +8,6 @@ const Home = () => {
 
       <main className="flex-grow flex flex-col items-center justify-center px-6 w-full max-w-7xl mx-auto">
         
-        {/* Hero Text */}
         <div className="text-center mb-12">
           <h1 className="text-7xl md:text-8xl font-bold text-[#E89F4C] mb-4 tracking-tight drop-shadow-sm">
             Compensey
@@ -23,7 +22,7 @@ const Home = () => {
           </p>
         </div>
 
-        {/* Input Section */}
+  
         <div className="w-full max-w-5xl bg-white/40 backdrop-blur-sm border border-[#E89F4C]/20 rounded-2xl p-12 shadow-xl mb-12">
           <p className="text-[#D48C3C] text-center text-lg font-medium mb-10">
             Compare two companies using data-driven ML insights.
@@ -39,7 +38,7 @@ const Home = () => {
               />
             </div>
 
-            {/* Separator - Vertical Line */}
+           
             <div className="hidden md:block h-24 w-[1px] bg-[#E89F4C]/30"></div>
 
             {/* Company B Input */}
