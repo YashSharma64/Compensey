@@ -1,11 +1,7 @@
 def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, question):
-    """
-    Generates a McKinsey-style strategic response based on current metrics and the user's question.
-    Avoids predictions. Uses scenario-based reasoning.
-    """
+    """Return a strategic narrative based on the current metrics and question."""
     question_lower = question.lower()
-    
-    # Extract metrics for cleaner logic
+
     sent_a = metrics_a.get('sentiment', 0)
     growth_a = metrics_a.get('growth', 0)
     risk_a = metrics_a.get('risk', 0)
@@ -13,13 +9,11 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
     sent_b = metrics_b.get('sentiment', 0)
     growth_b = metrics_b.get('growth', 0)
     
-    # Identify Leader
     leader_growth = company_a if growth_a > growth_b else company_b
     laggard_growth = company_b if growth_a > growth_b else company_a
     
     leader_sent = company_a if sent_a > sent_b else company_b
 
-    # 1. FUTURE / GROWTH SCENARIOS
     if any(q in question_lower for q in ['future', 'long-term', 'next year', 'who will win', 'position']):
         diff = abs(growth_a - growth_b)
         if diff < 10:
@@ -38,7 +32,6 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
                 f"Strategic Recommendation for {laggard_growth}: Focus on distinct value propositions to disrupt the incumbent's momentum."
             )
 
-    # 2. RISK / DOWNSIDE SCENARIOS
     elif any(q in question_lower for q in ['risk', 'fail', 'problem', 'bad', 'volatility']):
         high_risk_company = company_a if risk_a > 0.3 else (company_b if metrics_b['risk'] > 0.3 else None)
         
@@ -57,13 +50,10 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
                 "it opens a strategic window for competitors to enter with superior service offerings."
             )
 
-    # 3. GENERIC / UNKNOWN QUESTION
     else:
-        # Use current metrics to shape the narrative instead of a single fixed template.
         growth_gap = abs(growth_a - growth_b)
         sentiment_gap = abs(sent_a - sent_b)
 
-        # Case A: One player is clearly ahead on both growth and sentiment
         if (growth_a > growth_b and sent_a > sent_b) or (growth_b > growth_a and sent_b > sent_a):
             dominant = company_a if (growth_a > growth_b and sent_a > sent_b) else company_b
             follower = company_b if dominant == company_a else company_a
@@ -79,7 +69,6 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
                 "(sentiment) or creating a sharp, differentiated growth story rather than imitating the leader."
             )
 
-        # Case B: Growth vs sentiment trade-off (one wins growth, other wins sentiment)
         if (growth_a > growth_b and sent_b > sent_a) or (growth_b > growth_a and sent_a > sent_b):
             growth_leader = company_a if growth_a > growth_b else company_b
             sentiment_leader = company_b if growth_leader == company_a else company_a
@@ -94,7 +83,6 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
                 f"either {growth_leader} investing deliberately in experience, or {sentiment_leader} finding a repeatable growth engine."
             )
 
-        # Case C: Metrics are very close – essentially a tie
         if growth_gap < 5 and sentiment_gap < 5:
             return (
                 f"On the current evidence, {company_a} and {company_b} are operating in a near-parity zone. "
@@ -104,7 +92,6 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
                 "before making any irreversible strategic bet."
             )
 
-        # Case D: One side looks riskier despite similar growth
         if abs(growth_a - growth_b) < 10 and abs(risk_a - metrics_b.get('risk', 0)) > 0.1:
             riskier = company_a if risk_a > metrics_b.get('risk', 0) else company_b
             steadier = company_b if riskier == company_a else company_a
@@ -115,7 +102,6 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
                 f"Capital allocators who are more risk-tolerant may lean towards {riskier}, while conservative operators will likely favour {steadier}."
             )
 
-        # Fallback narrative if none of the above patterns are strong
         return (
             "From a strategic standpoint, the current data does not yet support a simple \"winner-takes-all\" narrative. "
             f"{company_a} is positioned with sentiment around ({sent_a:.1f}) and growth around ({growth_a:.1f}), while "
