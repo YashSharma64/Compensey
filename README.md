@@ -81,7 +81,8 @@ The UI should now be accessible (usually at `http://localhost:5173`).
     - **Growth Comparison**: RandomForest or XGBoost
     - **Stability / Anomaly Signals**: IsolationForest
 4. **Decision Engine**: The system determines which company is performing better and *why*.
-5. **Presentation**: Results are returned as structured JSON and displayed on the Frontend.
+5. **Strategic Outlook**: Users can ask scenario-based questions (e.g., "What if growth slows?") to get consulting-grade, rule-based reasoning, avoiding generative AI hallucinations.
+6. **Presentation**: Results are returned as structured JSON and displayed on the Frontend.
 
 ---
 
@@ -189,6 +190,26 @@ compensey-ai/
     "Higher delivery satisfaction",
     "More stable growth trend"
   ]
+}
+```
+
+### Strategic Outlook Endpoint: `POST /strategy`
+
+**Request:**
+```json
+{
+  "company_a": "Zomato",
+  "company_b": "Swiggy",
+  "metrics_a": {"sentiment": 85, "growth": 9.2},
+  "metrics_b": {"sentiment": 78, "growth": 8.5},
+  "question": "Who wins long term?"
+}
+```
+
+**Response:**
+```json
+{
+  "answer": "Based on current signals, Zomato demonstrates stronger growth velocity..."
 }
 ```
 
