@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
+import LoadingOverlay from '../components/LoadingOverlay';
+
+const LOADING_STAGES = [
+  "Connecting to secure financial servers...",
+  "Fetching quarterly reports and market data...",
+  "Analyzing sentiment across 50,000+ customer reviews...",
+  "Calculating proprietary growth indices...",
+  "Detecting anomalies in performance metrics...",
+  "Synthesizing final competitive report..."
+];
 
 const Home = ({ onAnalyze }) => {
   const [companyA, setCompanyA] = useState('');
@@ -49,7 +59,10 @@ const Home = ({ onAnalyze }) => {
         insight: data.shap_insight
       };
 
-      if (onAnalyze) {
+      // Artificial delay to show off the loading animation (User request: "fascinate the user")
+       await new Promise(resolve => setTimeout(resolve, 3500));
+
+       if (onAnalyze) {
         onAnalyze(mappedData);
       }
     } catch (err) {
@@ -135,6 +148,8 @@ const Home = ({ onAnalyze }) => {
           Uses sentiment analysis, growth modeling & explainable ML.
         </p>
       </footer>
+      
+      {loading && <LoadingOverlay messages={LOADING_STAGES} />}
     </div>
   );
 };
