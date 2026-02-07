@@ -74,15 +74,15 @@ The UI should now be accessible (usually at `http://localhost:5173`).
 
 ## 🧠 Functional Overview
 
-1. **User Selection**: User selects Company A and Company B.
-2. **Data Pipeline**: Backend loads structured data for both companies. Data is cleaned and transformed into ML features.
-3. **Inference**: Multiple ML models run inference:
-    - **Sentiment Analysis**: TF-IDF + Logistic Regression
-    - **Growth Comparison**: RandomForest or XGBoost
-    - **Stability / Anomaly Signals**: IsolationForest
-4. **Decision Engine**: The system determines which company is performing better and *why*.
-5. **Strategic Outlook**: Users can ask scenario-based questions (e.g., "What if growth slows?") to get consulting-grade, rule-based reasoning, avoiding generative AI hallucinations.
-6. **Presentation**: Results are returned as structured JSON and displayed on the Frontend.
+1. **Company Selection** – the user selects Company A and Company B.
+2. **Data Pipeline** – the backend loads structured review data for both companies, then cleans and transforms it into ML-ready features.
+3. **Inference** – multiple models run on the engineered features:
+    - **Sentiment** – TF-IDF + Logistic Regression over review text
+    - **Growth** – tree-based model over recent activity signals
+    - **Stability / Risk** – IsolationForest over rating / review patterns
+4. **Decision Engine** – combines sentiment, growth, and risk into comparable scores and identifies a winner.
+5. **Strategic Outlook** – a rule-based engine turns scores into a consulting-style narrative (no external LLMs).
+6. **Presentation** – the frontend calls the REST API and renders scores, explanations, and the strategic memo.
 
 ---
 
@@ -91,15 +91,14 @@ The UI should now be accessible (usually at `http://localhost:5173`).
 ### Backend
 - **Language**: Python 3.10+
 - **Framework**: FastAPI
-- **Data & ML**: Pandas, NumPy, scikit-learn
-- **Explainability**: SHAP (requires `matplotlib`, `ipython`)
-- **Runtime**: `uvicorn`
+- **Data & ML**: pandas, NumPy, scikit-learn
+- **Explainability**: SHAP (with `matplotlib`, `ipython`)
+- **Runtime**: uvicorn
 
 ### Frontend
-- **Framework**: React
-- **Build Tool**: Vite
+- **Framework**: React (Vite)
 - **Styling**: Tailwind CSS
-- **Visualization**: Chart.js or Recharts
+- **State & UI**: idiomatic React components and hooks
 
 ---
 
@@ -172,7 +171,8 @@ compensey-ai/
 
 ### Core Endpoint: `POST /compare`
 
-**Request:**
+**Request**
+
 ```json
 {
   "company_a": "Zomato",
@@ -180,36 +180,43 @@ compensey-ai/
 }
 ```
 
-**Response:**
+**Response**  (matches `CompareResponse` in `backend/app/schemas/compare.py`)
+
 ```json
 {
   "winner": "Swiggy",
-  "sentiment_score": 0.68,
-  "growth_score": 0.74,
+  "sentiment_score_a": 68.12,
+  "sentiment_score_b": 61.45,
+  "growth_score_a": 72.33,
+  "growth_score_b": 65.10,
   "explanation": [
-    "Higher delivery satisfaction",
-    "More stable growth trend"
-  ]
+    "Swiggy leads in customer satisfaction by 6.7%.",
+    "Swiggy is accelerating faster based on review trends.",
+    "Swiggy shows more consistent user feedback patterns."
+  ],
+  "shap_insight": "The main driver for the growth score is Customer Rating."
 }
 ```
 
 ### Strategic Outlook Endpoint: `POST /strategy`
 
-**Request:**
+**Request**
+
 ```json
 {
   "company_a": "Zomato",
   "company_b": "Swiggy",
-  "metrics_a": {"sentiment": 85, "growth": 9.2},
-  "metrics_b": {"sentiment": 78, "growth": 8.5},
-  "question": "Who wins long term?"
+  "metrics_a": {"sentiment": 85.0, "growth": 72.3, "risk": 0.18},
+  "metrics_b": {"sentiment": 78.0, "growth": 68.5, "risk": 0.24},
+  "question": "Who will win in the long term?"
 }
 ```
 
-**Response:**
+**Response**
+
 ```json
 {
-  "answer": "Based on current signals, Zomato demonstrates stronger growth velocity..."
+  "answer": "Based on current signals, Zomato demonstrates a stronger growth velocity compared to Swiggy while maintaining a comparable sentiment profile..."
 }
 ```
 
