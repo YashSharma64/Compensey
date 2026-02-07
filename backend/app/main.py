@@ -13,6 +13,8 @@ app.add_middleware(
 )
 
 app.include_router(compare.router)
+from app.api import strategy
+app.include_router(strategy.router)
 
 @app.get("/")
 def read_root():

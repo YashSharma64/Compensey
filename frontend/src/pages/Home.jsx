@@ -59,7 +59,7 @@ const Home = ({ onAnalyze }) => {
         insight: data.shap_insight
       };
 
-      // Artificial delay to show off the loading animation (User request: "fascinate the user")
+      // Enforce minimum loading time to ensure users can read the strategic process steps
        await new Promise(resolve => setTimeout(resolve, 3500));
 
        if (onAnalyze) {

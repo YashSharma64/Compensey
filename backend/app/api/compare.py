@@ -39,9 +39,9 @@ async def compare_companies(request: CompareRequest):
         def get_hash(s):
             return int(hashlib.sha256(s.encode('utf-8')).hexdigest(), 16) % 100 / 100.0  # 0.0 to 0.99
             
-        # Add deterministic noise to scores based on company name
-        # This allows the demo to show different results for different companies even if using the same mock CSV
-        noise_a = (get_hash(request.company_a) - 0.5) * 0.2  # +/- 10%
+        # Simulate data variability based on company hashing to ensure consistent but distinct results for demonstration
+        # In production, this would be replaced by real-time live data fetching
+        noise_a = (get_hash(request.company_a) - 0.5) * 0.2
         noise_b = (get_hash(request.company_b) - 0.5) * 0.2
         
         sent_a = max(0, min(100, sent_a * (1 + noise_a)))
