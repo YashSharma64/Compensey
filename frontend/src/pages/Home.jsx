@@ -1,8 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import LoadingOverlay from '../components/LoadingOverlay';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const LOADING_STAGES = [
   "Connecting to secure financial servers...",
@@ -17,50 +15,32 @@ const Home = ({ onAnalyze }) => {
   const [companyA, setCompanyA] = useState('');
   const [companyB, setCompanyB] = useState('');
   const [loading, setLoading] = useState(false);
-  const [currentStage, setCurrentStage] = useState(0);
   const [error, setError] = useState(null);
 
-  // Rotate through loading stages
-  const updateLoadingStage = useCallback(() => {
-    setCurrentStage(prev => (prev + 1) % LOADING_STAGES.length);
-  }, []);
-
   const handleAnalyzeClick = async () => {
-    if (!companyA.trim() || !companyB.trim()) {
+    if (!companyA || !companyB) {
       setError("Please enter both company names.");
-      return;
-    }
-    
-    if (companyA.toLowerCase() === companyB.toLowerCase()) {
-      setError("Please enter two different companies for comparison.");
       return;
     }
     
     setLoading(true);
     setError(null);
-    
-    // Start loading animation
-    const stageInterval = setInterval(updateLoadingStage, 2000);
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
-      
       const response = await fetch('http://127.0.0.1:8000/compare', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          company_a: companyA.trim(),
-          company_b: companyB.trim()
+          company_a: companyA,
+          company_b: companyB
         }),
-        signal: controller.signal
       });
-      
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.detail || `Analysis failed (${response.status}). Please try again.`);
+        const errData = await response.json();
+        throw new Error(errData.detail || 'Analysis failed. Please try again.');
       }
 
       const data = await response.json();
@@ -71,9 +51,12 @@ const Home = ({ onAnalyze }) => {
       const mappedData = {
         winner: data.winner,
         loser: loser,
+        companyA: companyA,
+        companyB: companyB,
         metrics: {
           sentiment: { a: data.sentiment_score_a, b: data.sentiment_score_b },
-          growth: { a: data.growth_score_a, b: data.growth_score_b }
+          growth: { a: data.growth_score_a, b: data.growth_score_b },
+          risk: { a: data.risk_score_a, b: data.risk_score_b }
         },
         reasons: data.explanation,
         insight: data.shap_insight

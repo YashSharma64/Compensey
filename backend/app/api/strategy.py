@@ -8,7 +8,6 @@ router = APIRouter()
 @router.post("/strategy", response_model=StrategyResponse)
 async def strategic_outlook(request: StrategyRequest):
     try:
-        # Processing delay for complex scenario analysis
         await asyncio.sleep(1.5)
         
         answer = generate_strategic_response(
