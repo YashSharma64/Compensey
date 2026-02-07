@@ -1,24 +1,17 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import Navbar from '../components/Navbar';
 
 const Result = ({ data, onBack }) => {
-  // Default/Mock data if none provided
-  const resultData = data || {
-    winner: 'Company A',
-    loser: 'Company B',
-    metrics: {
-      sentiment: { a: 85, b: 65 },
-      growth: { a: 9.2, b: 4.5 }
-    },
-    reasons: [
-      "Company A shows 20% higher positive sentiment in recent customer reviews.",
-      "Growth momentum for Company A has accelerated in the last quarter.",
-      "Company B's stability metrics have declined slightly due to market volatility."
-    ],
-    insight: "Primary driver: Customer Rating and Product Velocity."
-  };
+  const [question, setQuestion] = useState('');
+  const [strategyResponse, setStrategyResponse] = useState(null);
+  const [isAsking, setIsAsking] = useState(false);
 
-  const { winner, loser, metrics, reasons, insight } = resultData;
+  // Default/Mock data if none provided
+  if (!data) return null;
+
+  const { winner, loser, metrics, reasons, insight } = data;
+
+
 
   // Simple calculation for bar heights (normalized to 100%)
   const maxSentiment = Math.max(metrics.sentiment.a, metrics.sentiment.b);
@@ -31,8 +24,43 @@ const Result = ({ data, onBack }) => {
   const growthH_A = (metrics.growth.a / maxGrowth) * 100;
   const growthH_B = (metrics.growth.b / maxGrowth) * 100;
 
+  const handleAskStrategy = async () => {
+    if (!question) return;
+    setIsAsking(true);
+    setStrategyResponse(null);
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/strategy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          company_a: data.winner,
+          company_b: data.loser,
+          metrics_a: data.metrics.sentiment.a > data.metrics.sentiment.b ? 
+            { sentiment: data.metrics.sentiment.a, growth: data.metrics.growth.a, risk: 0.1 } : 
+            { sentiment: data.metrics.sentiment.b, growth: data.metrics.growth.b, risk: 0.1 }, 
+          metrics_b: data.metrics.sentiment.a > data.metrics.sentiment.b ? 
+            { sentiment: data.metrics.sentiment.b, growth: data.metrics.growth.b, risk: 0.1 } : 
+            { sentiment: data.metrics.sentiment.a, growth: data.metrics.growth.a, risk: 0.1 },
+          question: question
+        })
+      });
+
+      if (!response.ok) throw new Error("Strategy engine busy");
+      
+      const data = await response.json();
+      setStrategyResponse(data.answer);
+    } catch (err) {
+      console.error(err);
+      setStrategyResponse("Strategic analysis subsystem is currently offline. Please try again.");
+    } finally {
+      setIsAsking(false);
+    }
+  };
+
+
   return (
-    <div className="h-screen w-screen bg-[#FFF9EF] text-[#2A2A2A] font-sans selection:bg-[#E89F4C] selection:text-white flex flex-col overflow-hidden">
+    <div className="h-screen w-screen bg-[#FFF9EF] text-[#2A2A2A] font-sans selection:bg-[#E89F4C] selection:text-white flex flex-col overflow-y-auto">
       <Navbar />
 
       <main className="flex-grow flex flex-col items-center justify-center px-6 w-full max-w-6xl mx-auto pb-10">
@@ -144,6 +172,50 @@ const Result = ({ data, onBack }) => {
 
         </div>
 
+
+
+        {/* 7. Strategic Outlook Section */}
+        <div className="w-full max-w-4xl mt-16 border-t border-[#E89F4C]/20 pt-12 animate-fade-in-up mb-12">
+            <h3 className="text-2xl font-serif text-[#5A4A3A] mb-2">Strategic Outlook</h3>
+            <p className="text-[#8B6E4E] text-sm mb-6 opacity-80">
+              Ask scenario-based questions to generate consulting-grade reasoning. 
+              <span className="italic"> (e.g., "What if growth slows?", "Key risks ahead?")</span>
+            </p>
+
+            <div className="flex gap-4 mb-8">
+              <input 
+                type="text" 
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="Ask about future scenarios..."
+                className="flex-1 bg-white/50 border border-[#E89F4C]/30 rounded-lg px-4 py-3 text-[#5A4A3A] placeholder-[#8B6E4E]/40 focus:outline-none focus:border-[#E89F4C] transition-colors"
+                onKeyDown={(e) => e.key === 'Enter' && handleAskStrategy()}
+              />
+              <button 
+                onClick={handleAskStrategy}
+                disabled={!question || isAsking}
+                className={`bg-[#5A4A3A] text-white px-8 py-3 rounded-lg font-medium tracking-wide hover:bg-[#4A3A2A] transition-colors ${(!question || isAsking) ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {isAsking ? 'Analyzing...' : 'Ask'}
+              </button>
+            </div>
+
+            {/* Strategy Response Memo */}
+            {strategyResponse && (
+              <div className="bg-white/60 border-l-4 border-[#5A4A3A] p-6 rounded-r-lg shadow-sm animate-fade-in-up">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs font-bold tracking-widest text-[#8B6E4E] uppercase">Strategic Memo</span>
+                  <div className="h-px flex-1 bg-[#E89F4C]/20"></div>
+                </div>
+                <p className="text-[#2A2A2A] font-serif text-lg leading-relaxed antialiased">
+                  {strategyResponse}
+                </p>
+                <p className="text-xs text-[#8B6E4E] mt-4 italic opacity-70">
+                  * Scenario-based reasoning based on current signals. Not a financial prediction.
+                </p>
+              </div>
+            )}
+        </div>
       </main>
     </div>
   );
