@@ -1,21 +1,65 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Result = ({ data, onBack }) => {
   const [question, setQuestion] = useState('');
   const [strategyResponse, setStrategyResponse] = useState(null);
   const [isAsking, setIsAsking] = useState(false);
+  const [error, setError] = useState(null);
+  const [typingText, setTypingText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
 
   // Default/Mock data if none provided
-  if (!data) return null;
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4">
+        <Navbar />
+        <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">No Data Available</h2>
+            <p className="text-gray-600 mb-6">Please go back and analyze companies first.</p>
+            <button
+              onClick={onBack}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Back to Analysis
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const { winner, loser, metrics, reasons, insight } = data;
 
-
+  // Typewriter effect for strategy response
+  useEffect(() => {
+    if (!strategyResponse || !isTyping) return;
+    
+    let currentIndex = 0;
+    const text = strategyResponse.answer;
+    
+    const typeNextCharacter = () => {
+      if (currentIndex < text.length) {
+        setTypingText(prev => prev + text[currentIndex]);
+        currentIndex++;
+        setTimeout(typeNextCharacter, 10); // Adjust typing speed here
+      } else {
+        setIsTyping(false);
+      }
+    };
+    
+    setTypingText('');
+    typeNextCharacter();
+    
+    return () => clearTimeout(typeNextCharacter);
+  }, [strategyResponse, isTyping]);
 
   // Simple calculation for bar heights (normalized to 100%)
-  const maxSentiment = Math.max(metrics.sentiment.a, metrics.sentiment.b);
-  const maxGrowth = Math.max(metrics.growth.a, metrics.growth.b);
+  const maxSentiment = Math.max(metrics.sentiment.a, metrics.sentiment.b, 1); // Ensure no division by zero
+  const maxGrowth = Math.max(metrics.growth.a, metrics.growth.b, 1);
   
   // Height percentages
   const sentH_A = (metrics.sentiment.a / maxSentiment) * 100;
@@ -24,12 +68,24 @@ const Result = ({ data, onBack }) => {
   const growthH_A = (metrics.growth.a / maxGrowth) * 100;
   const growthH_B = (metrics.growth.b / maxGrowth) * 100;
 
-  const handleAskStrategy = async () => {
-    if (!question) return;
+  const handleAskStrategy = async (e) => {
+    e.preventDefault();
+    
+    if (!question.trim()) {
+      setError("Please enter a question before asking.");
+      return;
+    }
+    
     setIsAsking(true);
+    setError(null);
     setStrategyResponse(null);
+    setTypingText('');
+    setIsTyping(true);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+      
       const response = await fetch('http://127.0.0.1:8000/strategy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -42,11 +98,17 @@ const Result = ({ data, onBack }) => {
           metrics_b: metrics.sentiment.a > metrics.sentiment.b ? 
             { sentiment: metrics.sentiment.b, growth: metrics.growth.b, risk: 0.1 } : 
             { sentiment: metrics.sentiment.a, growth: metrics.growth.a, risk: 0.1 },
-          question: question
-        })
+          question: question.trim()
+        }),
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
-      if (!response.ok) throw new Error("Strategy engine busy");
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.detail || 'Failed to get strategy response');
+      }
       
       const strategyData = await response.json();
       setStrategyResponse(strategyData.answer);
