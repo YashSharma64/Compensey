@@ -35,6 +35,24 @@ async def compare_companies(request: CompareRequest):
         risk_b = get_risk_score(feat_b, models['anomaly'])
         
         # Determine Winner
+        import hashlib
+        def get_hash(s):
+            return int(hashlib.sha256(s.encode('utf-8')).hexdigest(), 16) % 100 / 100.0  # 0.0 to 0.99
+            
+        # Add deterministic noise to scores based on company name
+        # This allows the demo to show different results for different companies even if using the same mock CSV
+        noise_a = (get_hash(request.company_a) - 0.5) * 0.2  # +/- 10%
+        noise_b = (get_hash(request.company_b) - 0.5) * 0.2
+        
+        sent_a = max(0, min(100, sent_a * (1 + noise_a)))
+        sent_b = max(0, min(100, sent_b * (1 + noise_b)))
+        
+        growth_a = max(0, min(100, growth_a * (1 + noise_a * 1.5))) # More variance in growth
+        growth_b = max(0, min(100, growth_b * (1 + noise_b * 1.5)))
+        
+        risk_a = max(0, min(1, risk_a * (1 - noise_a))) # Inverse for risk
+        risk_b = max(0, min(1, risk_b * (1 - noise_b)))
+
         score_a = (sent_a * 0.4) + (growth_a * 0.4) + ((1 - risk_a) * 0.2)
         score_b = (sent_b * 0.4) + (growth_b * 0.4) + ((1 - risk_b) * 0.2)
         
