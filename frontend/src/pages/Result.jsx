@@ -34,22 +34,22 @@ const Result = ({ data, onBack }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          company_a: data.winner,
-          company_b: data.loser,
-          metrics_a: data.metrics.sentiment.a > data.metrics.sentiment.b ? 
-            { sentiment: data.metrics.sentiment.a, growth: data.metrics.growth.a, risk: 0.1 } : 
-            { sentiment: data.metrics.sentiment.b, growth: data.metrics.growth.b, risk: 0.1 }, 
-          metrics_b: data.metrics.sentiment.a > data.metrics.sentiment.b ? 
-            { sentiment: data.metrics.sentiment.b, growth: data.metrics.growth.b, risk: 0.1 } : 
-            { sentiment: data.metrics.sentiment.a, growth: data.metrics.growth.a, risk: 0.1 },
+          company_a: winner,
+          company_b: loser,
+          metrics_a: metrics.sentiment.a > metrics.sentiment.b ? 
+            { sentiment: metrics.sentiment.a, growth: metrics.growth.a, risk: 0.1 } : 
+            { sentiment: metrics.sentiment.b, growth: metrics.growth.b, risk: 0.1 }, 
+          metrics_b: metrics.sentiment.a > metrics.sentiment.b ? 
+            { sentiment: metrics.sentiment.b, growth: metrics.growth.b, risk: 0.1 } : 
+            { sentiment: metrics.sentiment.a, growth: metrics.growth.a, risk: 0.1 },
           question: question
         })
       });
 
       if (!response.ok) throw new Error("Strategy engine busy");
       
-      const data = await response.json();
-      setStrategyResponse(data.answer);
+      const strategyData = await response.json();
+      setStrategyResponse(strategyData.answer);
     } catch (err) {
       console.error(err);
       setStrategyResponse("Strategic analysis subsystem is currently offline. Please try again.");
