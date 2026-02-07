@@ -11,6 +11,8 @@ class CompareResponse(BaseModel):
     sentiment_score_b: float
     growth_score_a: float
     growth_score_b: float
+    risk_score_a: float
+    risk_score_b: float
     explanation: List[str]
     shap_insight: str
 

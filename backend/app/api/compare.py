@@ -73,6 +73,8 @@ async def compare_companies(request: CompareRequest):
             sentiment_score_b=round(sent_b, 2),
             growth_score_a=round(growth_a, 2),
             growth_score_b=round(growth_b, 2),
+            risk_score_a=round(risk_a, 4),
+            risk_score_b=round(risk_b, 4),
             explanation=explanations,
             shap_insight=shap_insight
         )
