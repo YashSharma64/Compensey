@@ -4,6 +4,8 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestRegressor, IsolationForest
+from sklearn.metrics import accuracy_score, f1_score
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 
 from app.services.data_loader import load_company_data
@@ -44,7 +46,28 @@ def train_and_save_models() -> None:
             ("clf", LogisticRegression()),
         ]
     )
-    sentiment_model.fit(df["review_text"].fillna(""), df["rating"])
+
+    X_text = df["review_text"].fillna("")
+    y_rating = df["rating"]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_text,
+        y_rating,
+        test_size=0.2,
+        random_state=42,
+        stratify=y_rating if y_rating.nunique() > 1 else None,
+    )
+
+    sentiment_model.fit(X_train, y_train)
+
+    try:
+        y_pred = sentiment_model.predict(X_test)
+        acc = accuracy_score(y_test, y_pred)
+        f1 = f1_score(y_test, y_pred, average="macro")
+        print(f"[eval] sentiment_model accuracy={acc:.3f} macro_f1={f1:.3f} (test_size=0.2)")
+    except Exception as e:
+        print(f"[eval] sentiment_model evaluation skipped: {e}")
+
     _save_model("sentiment", sentiment_model)
 
     # -------- Growth Model --------

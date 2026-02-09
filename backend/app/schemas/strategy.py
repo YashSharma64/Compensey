@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict
+from typing import Dict, List, Optional
 
 class StrategyRequest(BaseModel):
     company_a: str
@@ -7,6 +7,7 @@ class StrategyRequest(BaseModel):
     metrics_a: Dict[str, float]
     metrics_b: Dict[str, float]
     question: str
+    drivers: Optional[List[str]] = None
 
 class StrategyResponse(BaseModel):
     answer: str

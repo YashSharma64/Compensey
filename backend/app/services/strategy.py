@@ -1,7 +1,7 @@
 import hashlib
 import math
 import random
-from typing import Dict, Tuple
+from typing import Dict, List, Optional, Tuple
 
 
 def _safe_float(value, default: float = 0.0) -> float:
@@ -56,7 +56,7 @@ def _pick(rng: random.Random, options: Tuple[str, ...]) -> str:
     return options[rng.randrange(len(options))]
 
 
-def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, question):
+def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, question, drivers: Optional[List[str]] = None):
     metrics_a = metrics_a or {}
     metrics_b = metrics_b or {}
 
@@ -72,8 +72,21 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
     company_b = (company_b or "Company B").strip()
     question = (question or "").strip()
 
+    drivers = drivers or []
+
     intent = _infer_intent(question)
-    rng = _stable_rng(company_a, company_b, question, round(sent_a, 3), round(growth_a, 3), round(risk_a, 3), round(sent_b, 3), round(growth_b, 3), round(risk_b, 3))
+    rng = _stable_rng(
+        company_a,
+        company_b,
+        question,
+        ",".join(drivers[:5]),
+        round(sent_a, 3),
+        round(growth_a, 3),
+        round(risk_a, 3),
+        round(sent_b, 3),
+        round(growth_b, 3),
+        round(risk_b, 3),
+    )
 
     sent_delta = sent_a - sent_b
     growth_delta = growth_a - growth_b
@@ -119,6 +132,12 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
         f"risk is {'higher' if risk_delta > 0 else 'lower' if risk_delta < 0 else 'similar'} for {company_a} by ~{fmt(abs(risk_delta))}."
     )
 
+    driver_line = None
+    if drivers:
+        cleaned = [d.strip() for d in drivers if isinstance(d, str) and d.strip()]
+        if cleaned:
+            driver_line = "Drivers: " + "; ".join(cleaned[:2])
+
     if (growth_delta > 0 and sent_delta < 0) or (growth_delta < 0 and sent_delta > 0):
         tradeoff = "Pattern: one side is winning momentum while the other is winning trust; the winner will be whoever closes their gap first."
     elif abs(growth_delta) < 4.0 and abs(sent_delta) < 4.0:
@@ -154,6 +173,8 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
     question_wrap = "" if not question else f"In your question ('{question}'), the decision hinge is whether the leader can sustain its advantage while closing its gap."
 
     parts = [summary, insight]
+    if driver_line:
+        parts.append(driver_line)
     if tradeoff:
         parts.append(tradeoff)
     parts.extend([recommendation, risk_note, next_step])
