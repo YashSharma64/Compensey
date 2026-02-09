@@ -1,8 +1,8 @@
 # CompenseyAI
 
-> **CompenseyAI automates early-stage competitor benchmarking using explainable machine learning models and publicly available data to support data-driven business decisions.**
+> **CompenseyAI is a production-minded competitor intelligence system that turns public review signals into an explainable A vs B benchmark and a consulting-style strategic brief.**
 
-CompenseyAI is an AI/ML competitor intelligence tool that compares two competing companies using publicly available data, applies trained machine learning models to generate explainable insights, and presents the result through a minimal professional UI.
+CompenseyAI compares two companies end-to-end: data ingestion → feature engineering → ML scoring → explainability → decision logic → API delivery → UI presentation. The goal is to show how you build a business-relevant ML system that is interpretable, testable, and deployable in principle (not a black-box demo).
 
 ---
 
@@ -10,12 +10,33 @@ CompenseyAI is an AI/ML competitor intelligence tool that compares two competing
 
 The goal of this project is to demonstrate:
 - **End-to-end AI/ML system design**
-- **Real model training, evaluation, and inference**
+- **Real model training and inference**
 - **Explainable decision-making** (no black-box AI)
 - **Clean full-stack architecture**
 - **Business-oriented thinking** (McKinsey-style benchmarking)
 
 *Note: This is not a chatbot, not an LLM-only app, and not a flashy demo.*
+
+---
+
+## ✅ What This System Does (End-to-End)
+
+1. **Inputs**
+   - Select `company_a` and `company_b` from the UI (or call the API directly).
+2. **Data pipeline**
+   - Loads public-style review datasets from `data/` (or generates mock data if missing).
+   - Cleans/standardizes fields and produces ML-ready features.
+3. **ML scoring (three lenses)**
+   - **Sentiment**: text-based sentiment signal.
+   - **Growth**: momentum-style signal from engineered activity/ratings patterns.
+   - **Risk / stability**: anomaly/volatility style signal.
+4. **Decision + explainability**
+   - Compares A vs B, produces a winner and the drivers behind the result (including SHAP-style attribution where applicable).
+5. **Strategic synthesis ("McKinsey-style" output)**
+   - Generates a concise executive brief that ties together the user question, metric deltas, trade-offs, and risks.
+6. **Delivery**
+   - Backend exposes clean REST endpoints (`/compare`, `/strategy`).
+   - Frontend renders the benchmark + strategic brief.
 
 ---
 
@@ -72,17 +93,22 @@ The UI should now be accessible (usually at `http://localhost:5173`).
 
 ---
 
-## 🧠 Functional Overview
+## 🧱 Architecture
 
-1. **Company Selection** – the user selects Company A and Company B.
-2. **Data Pipeline** – the backend loads structured review data for both companies, then cleans and transforms it into ML-ready features.
-3. **Inference** – multiple models run on the engineered features:
-    - **Sentiment** – TF-IDF + Logistic Regression over review text
-    - **Growth** – tree-based model over recent activity signals
-    - **Stability / Risk** – IsolationForest over rating / review patterns
-4. **Decision Engine** – combines sentiment, growth, and risk into comparable scores and identifies a winner.
-5. **Strategic Outlook** – a rule-based engine turns scores into a consulting-style narrative (no external LLMs).
-6. **Presentation** – the frontend calls the REST API and renders scores, explanations, and the strategic memo.
+```
+graph TD
+    Client[Frontend (React)] -->|REST API| API[Backend (FastAPI)]
+    API --> Pipeline[Data + Feature Pipeline]
+    Pipeline --> Models[ML Models (scikit-learn)]
+    Models --> Explain[Explainability (SHAP/attributions)]
+    API --> Decision[Decision + Strategy Engine]
+    Pipeline --> Data[CSV Datasets in data/]
+```
+
+Design choices that mirror real systems:
+- Backend is the core: data/ML/decision logic lives server-side.
+- API-first: the UI is a consumer of stable endpoints.
+- Explainability is a first-class output (not an afterthought).
 
 ---
 
@@ -102,22 +128,25 @@ The UI should now be accessible (usually at `http://localhost:5173`).
 
 ---
 
-## 🧱 System Architecture
+## 📊 ML Decision Logic (How the Output is Produced)
 
-```
-graph TD
-    Client[Frontend (React)] -->|REST API| API[Backend (FastAPI - Python)]
-    API --> ML[ML Layer (scikit-learn models)]
-    ML --> Data[CSV / Structured Datasets]
-    
-    subgraph Core "Backend is Core"
-    API
-    ML
-    Data
-    end
-```
+The system is intentionally designed to produce **decision-quality outputs**, not just raw predictions.
 
-The backend is the core of the system. The frontend serves solely to display the results.
+1. **Signals (measurable scores)**
+   - Sentiment score
+   - Growth score
+   - Risk/stability score
+2. **Comparative reasoning (A vs B)**
+   - Computes deltas and identifies leaders per dimension.
+   - Detects patterns (trade-off vs parity vs clear leader).
+3. **Explainability ("why")**
+   - Uses SHAP-style insights to highlight influential features where applicable.
+4. **Strategic synthesis ("so what")**
+   - Produces an integrated, concise brief:
+     - Executive view
+     - Key insight (metric deltas)
+     - Recommendation (what to do next)
+     - Risks and next validation step
 
 ---
 
@@ -216,7 +245,7 @@ compensey-ai/
 
 ```json
 {
-  "answer": "Based on current signals, Zomato demonstrates a stronger growth velocity compared to Swiggy while maintaining a comparable sentiment profile..."
+  "answer": "Executive view (recommended action, next 6–12 months): Zomato vs Swiggy...\nKey insight: ...\nRecommendation: ..."
 }
 ```
 
