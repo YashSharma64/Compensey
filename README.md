@@ -172,6 +172,17 @@ The system is intentionally designed to produce **decision-quality outputs**, no
 - Why one company scored higher than the other.
 *Explainability is a core feature, not optional.*
 
+### ✅ How We Evaluate (Credibility)
+
+The sentiment model is evaluated with a simple **train/test split**:
+- **Split**: 80% train / 20% test (`random_state=42`)
+- **Metrics**: Accuracy and Macro-F1
+
+During training, the backend logs:
+`[eval] sentiment_model accuracy=... macro_f1=... (test_size=0.2)`
+
+This keeps the system explainable and lightweight while still providing measurable performance evidence.
+
 ---
 
 ## 📂 Folder Structure

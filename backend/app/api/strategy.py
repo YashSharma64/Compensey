@@ -15,7 +15,8 @@ async def strategic_outlook(request: StrategyRequest):
             request.company_b, 
             request.metrics_a, 
             request.metrics_b, 
-            request.question
+            request.question,
+            request.drivers,
         )
         
         return StrategyResponse(answer=answer)
