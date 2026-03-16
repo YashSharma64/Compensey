@@ -22,3 +22,5 @@ coverage/
 *.h5
 *.pkl
 *.model
+
+data/*.csv
