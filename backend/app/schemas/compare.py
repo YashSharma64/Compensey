@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 class CompareRequest(BaseModel):
     company_a: str
@@ -15,4 +15,5 @@ class CompareResponse(BaseModel):
     risk_score_b: float
     explanation: List[str]
     shap_insight: str
+    raw_drivers: Optional[List[str]] = None
 
