@@ -104,7 +104,10 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
             Client's Specific Question: "{question}"
 
             Task: Write a 4-to-5 sentence "Executive View" answering the client's question based strictly on these metrics. 
-            CRITICAL: You MUST include the exact numbers and deltas (e.g., "Company A leads in customer sentiment with a score of {sent_a:.1f} compared to {sent_b:.1f}"). 
+            CRITICAL INSTRUCTIONS: 
+            1. You MUST include the exact numbers and deltas (e.g., "Company A leads in customer sentiment with a score of {sent_a:.1f} compared to {sent_b:.1f}").
+            2. DO NOT use any markdown formatting whatsoever (no **, no #, no bullet points). Return strictly plain text. 
+            
             Act as a data-driven analyst—your insights should be explicitly backed by the numerical scores provided above.
             Focus on trade-offs (if one leads in growth but lags in sentiment). 
             End with a single recommended action for someone investing or advising in this space. 
