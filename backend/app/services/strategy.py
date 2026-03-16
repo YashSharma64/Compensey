@@ -1,7 +1,14 @@
 import hashlib
 import math
 import random
+import os
+import json
 from typing import Dict, List, Optional, Tuple
+
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def _safe_float(value, default: float = 0.0) -> float:
@@ -57,6 +64,7 @@ def _pick(rng: random.Random, options: Tuple[str, ...]) -> str:
 
 
 def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, question, drivers: Optional[List[str]] = None):
+    # Setup Metrics
     metrics_a = metrics_a or {}
     metrics_b = metrics_b or {}
 
@@ -71,21 +79,53 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
     company_a = (company_a or "Company A").strip()
     company_b = (company_b or "Company B").strip()
     question = (question or "").strip()
-
     drivers = drivers or []
 
+    # Dynamic LLM Logic (Gemini)
+    api_key = os.getenv("GEMINI_API_KEY")
+    if api_key:
+        try:
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel("gemini-2.5-flash")
+            
+            prompt = f"""
+            You are a top-tier management consultant and data analyst from McKinsey or Bain. Your job is to analyze the following metrics for two companies and provide a concise, hard-hitting strategic outlook.
+
+            Companies:
+            - Company A: {company_a}
+            - Company B: {company_b}
+
+            Objective Metrics (Derived from Machine Learning models on customer data):
+            - {company_a}: Sentiment Score: {sent_a:.1f}, Growth/Momentum Score: {growth_a:.1f}, Risk/Volatility: {_risk_label(risk_a)} (score: {risk_a:.2f})
+            - {company_b}: Sentiment Score: {sent_b:.1f}, Growth/Momentum Score: {growth_b:.1f}, Risk/Volatility: {_risk_label(risk_b)} (score: {risk_b:.2f})
+            
+            Key Insights derived from data elements (SHAP drivers): {', '.join(drivers) if drivers else 'None provided'}
+            
+            Client's Specific Question: "{question}"
+
+            Task: Write a 4-to-5 sentence "Executive View" answering the client's question based strictly on these metrics. 
+            CRITICAL: You MUST include the exact numbers and deltas (e.g., "Company A leads in customer sentiment with a score of {sent_a:.1f} compared to {sent_b:.1f}"). 
+            Act as a data-driven analyst—your insights should be explicitly backed by the numerical scores provided above.
+            Focus on trade-offs (if one leads in growth but lags in sentiment). 
+            End with a single recommended action for someone investing or advising in this space. 
+            Write confidently, as an expert consultant. Avoid fluff.
+            """
+            
+            response = model.generate_content(prompt)
+            if response.text:
+                return response.text.strip()
+        except Exception as e:
+            print(f"Gemini API failed or is not configured correctly: {e}. Falling back to deterministic strategy generation.")
+            pass # Fall through to deterministic logic below
+
+
+    # Fallback Deterministic Logic
     intent = _infer_intent(question)
     rng = _stable_rng(
-        company_a,
-        company_b,
-        question,
+        company_a, company_b, question,
         ",".join(drivers[:5]),
-        round(sent_a, 3),
-        round(growth_a, 3),
-        round(risk_a, 3),
-        round(sent_b, 3),
-        round(growth_b, 3),
-        round(risk_b, 3),
+        round(sent_a, 3), round(growth_a, 3), round(risk_a, 3),
+        round(sent_b, 3), round(growth_b, 3), round(risk_b, 3),
     )
 
     sent_delta = sent_a - sent_b
@@ -94,7 +134,6 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
 
     growth_leader = company_a if growth_delta >= 0 else company_b
     sentiment_leader = company_a if sent_delta >= 0 else company_b
-    riskier = company_a if risk_delta >= 0 else company_b
 
     def fmt(x: float) -> str:
         if math.isnan(x) or math.isinf(x):
@@ -182,3 +221,4 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
         parts.append(question_wrap)
 
     return "\n".join(parts)
+
