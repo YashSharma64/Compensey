@@ -1,4 +1,13 @@
-def test_strategy_returns_memo(client):
+import pytest
+from unittest.mock import patch
+
+@patch("google.generativeai.GenerativeModel.generate_content")
+def test_strategy_returns_memo(mock_generate, client):
+    class MockResponse:
+        text = "Recommendation: Based on the metrics, Zomato is positioned for long-term outperformance."
+
+    mock_generate.return_value = MockResponse()
+
     payload = {
         "company_a": "Zomato",
         "company_b": "Swiggy",
@@ -15,7 +24,13 @@ def test_strategy_returns_memo(client):
     assert "Recommendation:" in data["answer"]
 
 
-def test_strategy_includes_drivers_when_provided(client):
+@patch("google.generativeai.GenerativeModel.generate_content")
+def test_strategy_includes_drivers_when_provided(mock_generate, client):
+    class MockResponse:
+        text = "Drivers: Higher 4-5 star share. Recommendation: Maintain current trajectory."
+
+    mock_generate.return_value = MockResponse()
+
     payload = {
         "company_a": "Zomato",
         "company_b": "Swiggy",
@@ -29,3 +44,4 @@ def test_strategy_includes_drivers_when_provided(client):
 
     memo = resp.json()["answer"]
     assert "Drivers:" in memo
+
