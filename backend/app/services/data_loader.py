@@ -11,13 +11,13 @@ def load_company_data(company_name: str) -> pd.DataFrame:
     
     # Simple mapping for demo purposes
     if "zomato" in company_name:
-        filename = "company_a_reviews.csv"
+        filename = "zomato_clean.csv"
     elif "swiggy" in company_name:
-        filename = "company_b_reviews.csv"
+        filename = "swiggy_clean.csv"
     else:
         # Fallback for demo: randomly pick one if name doesn't match
         # In production this would error out
-        filename = "company_a_reviews.csv"
+        filename = "zomato_clean.csv"
 
     filepath = os.path.join(DATA_DIR, filename)
     

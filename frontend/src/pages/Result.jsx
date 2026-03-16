@@ -13,16 +13,24 @@ const Result = ({ data, onBack }) => {
 
 
 
-  // Simple calculation for bar heights (normalized to 100%)
-  const maxSentiment = Math.max(metrics.sentiment.a, metrics.sentiment.b);
-  const maxGrowth = Math.max(metrics.growth.a, metrics.growth.b);
+  // Simple calculation for bar heights (normalized to 1.0 for max scale)
+  const maxScale = 1.0;
+  
+  // Determine colors for each company
+  const getCompanyColor = (company) => {
+    return company === winner ? 'text-[#5A4A3A]' : 'text-[#E89F4C]';
+  };
+  
+  const getBarColor = (company) => {
+    return company === winner ? 'bg-[#5A4A3A]' : 'bg-[#E89F4C]/60';
+  };
   
   // Height percentages
-  const sentH_A = (metrics.sentiment.a / maxSentiment) * 100;
-  const sentH_B = (metrics.sentiment.b / maxSentiment) * 100;
+  const sentH_A = (metrics.sentiment.a / maxScale) * 100;
+  const sentH_B = (metrics.sentiment.b / maxScale) * 100;
   
-  const growthH_A = (metrics.growth.a / maxGrowth) * 100;
-  const growthH_B = (metrics.growth.b / maxGrowth) * 100;
+  const growthH_A = (metrics.growth.a / maxScale) * 100;
+  const growthH_B = (metrics.growth.b / maxScale) * 100;
 
   const handleAskStrategy = async () => {
     if (!question) return;
@@ -91,15 +99,15 @@ const Result = ({ data, onBack }) => {
               <div className="text-center">
                 <p className="text-[#8B6E4E] text-sm uppercase font-bold tracking-wider mb-2">Sentiment Score</p>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-5xl font-bold text-[#5A4A3A]">{metrics.sentiment.a}</span>
-                  <span className="text-lg text-[#E89F4C] font-medium">/ {metrics.sentiment.b}</span>
+                  <span className={`text-5xl font-bold ${getCompanyColor(companyA)}`}>{metrics.sentiment.a}</span>
+                  <span className={`text-lg font-medium ${getCompanyColor(companyB)}`}>/ {metrics.sentiment.b}</span>
                 </div>
               </div>
               <div className="text-center">
                 <p className="text-[#8B6E4E] text-sm uppercase font-bold tracking-wider mb-2">Growth Score</p>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-5xl font-bold text-[#5A4A3A]">{metrics.growth.a}</span>
-                  <span className="text-lg text-[#E89F4C] font-medium">/ {metrics.growth.b}</span>
+                  <span className={`text-5xl font-bold ${getCompanyColor(companyA)}`}>{metrics.growth.a}</span>
+                  <span className={`text-lg font-medium ${getCompanyColor(companyB)}`}>/ {metrics.growth.b}</span>
                 </div>
               </div>
             </div>
@@ -108,17 +116,21 @@ const Result = ({ data, onBack }) => {
             <div className="w-full max-w-md mt-auto pt-8">
                <div className="flex items-end justify-center h-48 gap-16 border-b border-[#E89F4C]/30 pb-0 relative">
                   
+                  {/* Scale indicator */}
+                  <div className="absolute -top-6 left-0 text-xs text-[#8B6E4E] font-medium">1.0</div>
+                  <div className="absolute -top-6 right-0 text-xs text-[#8B6E4E] font-medium">0.0</div>
+                  
                   {/* Group 1: Sentiment */}
                   <div className="flex gap-1 h-full items-end group relative w-16 justify-center">
-                    <div className="w-6 rounded-t-sm bg-[#5A4A3A]" style={{ height: `${sentH_A}%` }}></div>
-                    <div className="w-6 rounded-t-sm bg-[#E89F4C]/60" style={{ height: `${sentH_B}%` }}></div>
+                    <div className={`w-6 rounded-t-sm ${getBarColor(companyA)}`} style={{ height: `${sentH_A}%` }}></div>
+                    <div className={`w-6 rounded-t-sm ${getBarColor(companyB)}`} style={{ height: `${sentH_B}%` }}></div>
                     <div className="absolute -bottom-8 whitespace-nowrap text-xs font-bold text-[#8B6E4E] tracking-wider uppercase">Sentiment</div>
                   </div>
 
                   {/* Group 2: Growth */}
                   <div className="flex gap-1 h-full items-end group relative w-16 justify-center">
-                    <div className="w-6 rounded-t-sm bg-[#5A4A3A]" style={{ height: `${growthH_A}%` }}></div>
-                    <div className="w-6 rounded-t-sm bg-[#E89F4C]/60" style={{ height: `${growthH_B}%` }}></div>
+                    <div className={`w-6 rounded-t-sm ${getBarColor(companyA)}`} style={{ height: `${growthH_A}%` }}></div>
+                    <div className={`w-6 rounded-t-sm ${getBarColor(companyB)}`} style={{ height: `${growthH_B}%` }}></div>
                     <div className="absolute -bottom-8 whitespace-nowrap text-xs font-bold text-[#8B6E4E] tracking-wider uppercase">Growth</div>
                   </div>
                </div>
