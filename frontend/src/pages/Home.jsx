@@ -59,7 +59,8 @@ const Home = ({ onAnalyze }) => {
           risk: { a: data.risk_score_a, b: data.risk_score_b }
         },
         reasons: data.explanation,
-        insight: data.shap_insight
+        insight: data.shap_insight,
+        raw_drivers: Array.isArray(data.shap_insight) ? data.shap_insight : null
       };
 
       // Enforce minimum loading time to ensure users can read the strategic process steps

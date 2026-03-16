@@ -32,6 +32,7 @@ const Result = ({ data, onBack }) => {
   const growthH_A = (metrics.growth.a / maxScale) * 100;
   const growthH_B = (metrics.growth.b / maxScale) * 100;
 
+
   const handleAskStrategy = async () => {
     if (!question) return;
     setIsAsking(true);
@@ -56,7 +57,8 @@ const Result = ({ data, onBack }) => {
           company_b: loser,
           metrics_a: winnerMetrics,
           metrics_b: loserMetrics,
-          question: question
+          question: question,
+          drivers: data.raw_drivers || undefined
         })
       });
 
@@ -133,6 +135,7 @@ const Result = ({ data, onBack }) => {
                     <div className={`w-6 rounded-t-sm ${getBarColor(companyB)}`} style={{ height: `${growthH_B}%` }}></div>
                     <div className="absolute -bottom-8 whitespace-nowrap text-xs font-bold text-[#8B6E4E] tracking-wider uppercase">Growth</div>
                   </div>
+
                </div>
                
                {/* Legend */}
