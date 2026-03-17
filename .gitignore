@@ -24,4 +24,12 @@ frontend/.env
 *.pkl
 *.model
 
+# Keep cleaned data files
+!data/zomato_clean.csv
+!data/swiggy_clean.csv
+
+# Ignore raw data files
+data/raw/
 data/*.csv
+!data/zomato_clean.csv
+!data/swiggy_clean.csv
