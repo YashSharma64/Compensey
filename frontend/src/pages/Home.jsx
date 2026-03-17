@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import LoadingOverlay from '../components/LoadingOverlay';
+import { compareCompanies } from '../api/compare';
 
 const LOADING_STAGES = [
   "Connecting to secure financial servers...",
@@ -27,23 +28,7 @@ const Home = ({ onAnalyze }) => {
     setError(null);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/compare', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          company_a: companyA,
-          company_b: companyB
-        }),
-      });
-
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.detail || 'Analysis failed. Please try again.');
-      }
-
-      const data = await response.json();
+      const data = await compareCompanies(companyA, companyB);
       
       // Map API response to Result.jsx expectation
       const loser = data.winner === companyA ? companyB : companyA;
