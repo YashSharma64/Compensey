@@ -41,7 +41,7 @@ const Home = ({ onAnalyze }) => {
         },
         reasons: data.explanation,
         insight: data.shap_insight,
-        raw_drivers: Array.isArray(data.shap_insight) ? data.shap_insight : null
+        raw_drivers: data.raw_drivers || null
       };
 
       await new Promise(resolve => setTimeout(resolve, 3500));
