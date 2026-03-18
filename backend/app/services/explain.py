@@ -68,7 +68,7 @@ Rules:
 3. Do NOT add any opinion or data not derived from the scores above.
 4. Keep language concise, professional, and grounded in the numbers.
 """
-            response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
+            response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
             if response.text and response.text.strip():
                 lines = [l.strip() for l in response.text.strip().splitlines() if l.strip()]
                 if lines:
