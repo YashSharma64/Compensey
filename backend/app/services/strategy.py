@@ -6,8 +6,12 @@ import logging
 from typing import Dict, List, Optional, Tuple
 from google.genai import Client
 from dotenv import load_dotenv
+from pathlib import Path
 
 load_dotenv()
+env_path = Path(__file__).parent.parent.parent / ".env"
+if env_path.exists():
+    load_dotenv(env_path)
 logger = logging.getLogger(__name__)
 
 
