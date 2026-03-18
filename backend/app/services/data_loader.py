@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "data")
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data")
 
 def load_company_data(company_name: str) -> pd.DataFrame:
     """

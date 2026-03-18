@@ -29,15 +29,11 @@ const Home = ({ onAnalyze }) => {
 
     try {
       const data = await compareCompanies(companyA, companyB);
-      
-      // Map API response to Result.jsx expectation
       const loser = data.winner === companyA ? companyB : companyA;
       
       const mappedData = {
-        winner: data.winner,
-        loser: loser,
-        companyA: companyA,
-        companyB: companyB,
+        winner: data.winner, loser,
+        companyA, companyB,
         metrics: {
           sentiment: { a: data.sentiment_score_a, b: data.sentiment_score_b },
           growth: { a: data.growth_score_a, b: data.growth_score_b },
@@ -48,12 +44,8 @@ const Home = ({ onAnalyze }) => {
         raw_drivers: Array.isArray(data.shap_insight) ? data.shap_insight : null
       };
 
-      // Enforce minimum loading time to ensure users can read the strategic process steps
-       await new Promise(resolve => setTimeout(resolve, 3500));
-
-       if (onAnalyze) {
-        onAnalyze(mappedData);
-      }
+      await new Promise(resolve => setTimeout(resolve, 3500));
+      if (onAnalyze) onAnalyze(mappedData);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -87,33 +79,22 @@ const Home = ({ onAnalyze }) => {
             Compare two companies using data-driven ML insights.
           </p>
           
-          {error && (
-            <div className="absolute top-4 left-0 right-0 text-center text-red-500 font-medium">
-              {error}
-            </div>
-          )}
+          {error && <div className="absolute top-4 left-0 right-0 text-center text-red-500 font-medium">{error}</div>}
 
           <div className="flex flex-col md:flex-row gap-12 items-center justify-between w-full px-8">
-            {/* Company A Input */}
             <div className="relative group w-full">
               <input 
-                type="text" 
-                placeholder="Company A" 
-                value={companyA}
+                type="text" placeholder="Company A" value={companyA}
                 onChange={(e) => setCompanyA(e.target.value)}
                 className="w-full text-center text-3xl md:text-4xl font-bold text-[#5A4A3A] placeholder-[#E89F4C]/40 bg-transparent border-b-2 border-[#E89F4C]/20 focus:border-[#E89F4C] outline-none pb-4 transition-all duration-300"
               />
             </div>
 
-           
             <div className="hidden md:block h-24 w-[1px] bg-[#E89F4C]/30"></div>
 
-            {/* Company B Input */}
             <div className="relative group w-full">
               <input 
-                type="text" 
-                placeholder="Company B" 
-                value={companyB}
+                type="text" placeholder="Company B" value={companyB}
                 onChange={(e) => setCompanyB(e.target.value)}
                 className="w-full text-center text-3xl md:text-4xl font-bold text-[#5A4A3A] placeholder-[#E89F4C]/40 bg-transparent border-b-2 border-[#E89F4C]/20 focus:border-[#E89F4C] outline-none pb-4 transition-all duration-300"
               />
