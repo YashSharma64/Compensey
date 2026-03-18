@@ -11,18 +11,30 @@ def load_company_data(company_name: str) -> pd.DataFrame:
     
     # Simple mapping for demo purposes
     if "zomato" in company_name:
-        filename = "zomato_clean.csv"
+        candidates = ["zomato.csv", "zomato_clean.csv"]
     elif "swiggy" in company_name:
-        filename = "swiggy_clean.csv"
+        candidates = ["swiggy.csv", "swiggy_clean.csv"]
     else:
         # Fallback for demo: randomly pick one if name doesn't match
         # In production this would error out
-        filename = "zomato_clean.csv"
+        candidates = ["zomato.csv", "zomato_clean.csv"]
 
-    filepath = os.path.join(DATA_DIR, filename)
-    
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(f"Data file not found for {company_name}")
+    filepath = None
+    for name in candidates:
+        candidate_path = os.path.join(DATA_DIR, name)
+        if os.path.exists(candidate_path):
+            filepath = candidate_path
+            break
+
+    if filepath is None:
+        raise FileNotFoundError(f"Data file not found for {company_name}. Expected one of: {', '.join(candidates)} in {DATA_DIR}")
 
     df = pd.read_csv(filepath)
+    required = {"review_text", "rating", "date"}
+    missing = required.difference(df.columns)
+    if missing:
+        raise ValueError(
+            f"CSV schema mismatch for {company_name}: missing columns {sorted(missing)}. "
+            f"Expected columns: review_text,rating,date"
+        )
     return df

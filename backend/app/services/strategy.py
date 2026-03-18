@@ -106,7 +106,7 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
             End with a single recommended action for someone investing or advising in this space. 
             Write confidently, as an expert consultant. Avoid fluff.
             """
-            response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
+            response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
             if response.text:
                 logger.info("[strategy] Gemini response received")
                 return response.text.strip()
