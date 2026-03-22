@@ -84,7 +84,7 @@ const Home = ({ onAnalyze }) => {
           <div className="flex flex-col md:flex-row gap-12 items-center justify-between w-full px-8">
             <div className="relative group w-full">
               <input 
-                type="text" placeholder="Company A" value={companyA}
+                type="text" placeholder="zomato" value={companyA}
                 onChange={(e) => setCompanyA(e.target.value)}
                 className="w-full text-center text-3xl md:text-4xl font-bold text-[#5A4A3A] placeholder-[#E89F4C]/40 bg-transparent border-b-2 border-[#E89F4C]/20 focus:border-[#E89F4C] outline-none pb-4 transition-all duration-300"
               />
@@ -94,7 +94,7 @@ const Home = ({ onAnalyze }) => {
 
             <div className="relative group w-full">
               <input 
-                type="text" placeholder="Company B" value={companyB}
+                type="text" placeholder="swiggy" value={companyB}
                 onChange={(e) => setCompanyB(e.target.value)}
                 className="w-full text-center text-3xl md:text-4xl font-bold text-[#5A4A3A] placeholder-[#E89F4C]/40 bg-transparent border-b-2 border-[#E89F4C]/20 focus:border-[#E89F4C] outline-none pb-4 transition-all duration-300"
               />
