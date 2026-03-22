@@ -12,6 +12,8 @@ const LOADING_STAGES = [
   "Synthesizing final competitive report..."
 ];
 
+const VALID_COMPANIES = ["zomato", "swiggy"];
+
 const Home = ({ onAnalyze }) => {
   const [companyA, setCompanyA] = useState('');
   const [companyB, setCompanyB] = useState('');
@@ -21,6 +23,14 @@ const Home = ({ onAnalyze }) => {
   const handleAnalyzeClick = async () => {
     if (!companyA || !companyB) {
       setError("Please enter both company names.");
+      return;
+    }
+
+    const a = companyA.toLowerCase().trim();
+    const b = companyB.toLowerCase().trim();
+
+    if (!VALID_COMPANIES.includes(a) || !VALID_COMPANIES.includes(b)) {
+      setError("Demo version: Currently supports Zomato vs Swiggy analysis only.");
       return;
     }
     
@@ -100,6 +110,10 @@ const Home = ({ onAnalyze }) => {
               />
             </div>
           </div>
+
+          <p className="text-center text-[#8B6E4E] text-sm mt-6 opacity-70">
+            Demo version: Currently supports Zomato vs Swiggy analysis only.
+          </p>
 
           <div className="flex justify-center mt-12">
             <button 
