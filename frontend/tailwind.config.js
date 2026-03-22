@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+      },
       animation: {
         'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
         'progress-indeterminate': 'progressIndeterminate 1.5s infinite linear',
