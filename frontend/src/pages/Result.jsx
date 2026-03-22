@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Navbar from '../components/Navbar';
 import { getStrategy } from '../api/compare';
 
@@ -6,6 +6,11 @@ const Result = ({ data, onBack }) => {
   const [question, setQuestion] = useState('');
   const [strategyResponse, setStrategyResponse] = useState(null);
   const [isAsking, setIsAsking] = useState(false);
+  const strategyRef = useRef(null);
+
+  const scrollToStrategy = () => {
+    strategyRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   if (!data) return null;
 
@@ -48,8 +53,8 @@ const Result = ({ data, onBack }) => {
     <div className="h-screen w-screen bg-[#FFF9EF] text-[#2A2A2A] font-sans selection:bg-[#E89F4C] selection:text-white flex flex-col overflow-y-auto">
       <Navbar />
 
-      <main className="flex-grow flex flex-col items-center justify-center px-6 w-full max-w-6xl mx-auto pb-10">
-        <div className="text-center mb-10 w-full animate-fade-in-up">
+      <main className="flex-grow flex flex-col items-center px-6 w-full max-w-6xl mx-auto pb-10 pt-2">
+        <div className="text-center mb-6 w-full animate-fade-in-up">
           <h1 className="text-5xl md:text-6xl font-bold text-[#5A4A3A] mb-3 tracking-tight">
             Winner: <span className="text-[#E89F4C]">{winner}</span>
           </h1>
@@ -77,7 +82,7 @@ const Result = ({ data, onBack }) => {
               </div>
             </div>
 
-            <div className="w-full max-w-md mt-auto pt-8">
+            <div className="w-full max-w-md pt-4">
               <div className="flex items-end justify-center h-48 gap-16 border-b border-[#E89F4C]/30 pb-0 relative">
                 <div className="absolute -top-6 left-0 text-xs text-[#8B6E4E] font-medium">1.0</div>
                 <div className="absolute -top-6 right-0 text-xs text-[#8B6E4E] font-medium">0.0</div>
@@ -106,6 +111,13 @@ const Result = ({ data, onBack }) => {
                 </div>
               </div>
             </div>
+
+            <button 
+              onClick={scrollToStrategy}
+              className="mt-8 bg-[#8B6E4E] hover:bg-[#7A5E3F] text-white text-sm font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+            >
+              Get Strategic Insights ↓
+            </button>
           </div>
 
           <div className="hidden md:block w-[1px] bg-[#E89F4C]/20 self-stretch my-4"></div>
@@ -142,7 +154,7 @@ const Result = ({ data, onBack }) => {
           </div>
         </div>
 
-        <div className="w-full max-w-4xl mt-16 border-t border-[#E89F4C]/20 pt-12 animate-fade-in-up mb-12">
+        <div ref={strategyRef} className="w-full max-w-4xl mt-16 border-t border-[#E89F4C]/20 pt-12 animate-fade-in-up mb-12">
           <h3 className="text-2xl font-serif text-[#5A4A3A] mb-2">Strategic Outlook</h3>
           <p className="text-[#8B6E4E] text-sm mb-6 opacity-80">
             Ask scenario-based questions to generate consulting-grade reasoning. 
