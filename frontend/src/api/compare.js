@@ -1,5 +1,22 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+// Warmup ping - call on page load to wake up cold server
+export async function warmupBackend() {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 90000); // 90s timeout
+    
+    await fetch(`${BASE_URL}/`, { 
+      method: 'GET',
+      signal: controller.signal 
+    });
+    clearTimeout(timeoutId);
+    console.log('Backend warmed up');
+  } catch (e) {
+    console.log('Warmup ping sent (server waking up)');
+  }
+}
+
 export async function compareCompanies(companyA, companyB) {
   const response = await fetch(`${BASE_URL}/compare`, {
     method: 'POST',
