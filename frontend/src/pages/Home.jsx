@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import LoadingOverlay from '../components/LoadingOverlay';
-import { compareCompanies } from '../api/compare';
+import { compareCompanies, warmupBackend } from '../api/compare';
 
 const LOADING_STAGES = [
   "Connecting to secure financial servers...",
@@ -18,6 +18,11 @@ const Home = ({ onAnalyze }) => {
   const [companyA, setCompanyA] = useState('');
   const [companyB, setCompanyB] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Warmup backend on page load
+  useEffect(() => {
+    warmupBackend();
+  }, []);
   const [error, setError] = useState(null);
 
   const handleAnalyzeClick = async () => {
