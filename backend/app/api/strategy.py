@@ -14,7 +14,6 @@ async def strategic_outlook(request: StrategyRequest):
     logger.info(f"[strategy] Request: {request.company_a} vs {request.company_b}")
     
     try:
-        await asyncio.sleep(1.5)
         answer = generate_strategic_response(
             request.company_a, request.company_b,
             request.metrics_a, request.metrics_b,

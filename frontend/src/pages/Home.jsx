@@ -59,7 +59,6 @@ const Home = ({ onAnalyze }) => {
         raw_drivers: data.raw_drivers || null
       };
 
-      await new Promise(resolve => setTimeout(resolve, 3500));
       if (onAnalyze) onAnalyze(mappedData);
     } catch (err) {
       setError(err.message);
