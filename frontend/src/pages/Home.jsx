@@ -18,6 +18,7 @@ const Home = ({ onAnalyze }) => {
   const [companyA, setCompanyA] = useState('');
   const [companyB, setCompanyB] = useState('');
   const [loading, setLoading] = useState(false);
+  const [progressData, setProgressData] = useState(null);
 
   // Warmup backend on page load
   useEffect(() => {
@@ -40,10 +41,11 @@ const Home = ({ onAnalyze }) => {
     }
     
     setLoading(true);
+    setProgressData(null);
     setError(null);
 
     try {
-      const data = await compareCompanies(companyA, companyB);
+      const data = await compareCompanies(companyA, companyB, (prog) => setProgressData(prog));
       const loser = data.winner === companyA ? companyB : companyA;
       
       const mappedData = {
@@ -64,6 +66,7 @@ const Home = ({ onAnalyze }) => {
       setError(err.message);
     } finally {
       setLoading(false);
+      setProgressData(null);
     }
   };
 
@@ -137,7 +140,7 @@ const Home = ({ onAnalyze }) => {
         </p>
       </footer>
       
-      {loading && <LoadingOverlay messages={LOADING_STAGES} />}
+      {loading && <LoadingOverlay progressData={progressData} messages={LOADING_STAGES} />}
     </div>
   );
 };
