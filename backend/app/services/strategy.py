@@ -4,8 +4,9 @@ import random
 import os
 import logging
 from typing import Dict, List, Optional, Tuple
-from google.genai import Client
 from dotenv import load_dotenv
+
+from app.services.gemini_langchain import gemini_generate_text
 from pathlib import Path
 
 load_dotenv()
@@ -80,7 +81,6 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
     api_key = os.getenv("GEMINI_API_KEY")
     if api_key:
         try:
-            client = Client(api_key=api_key)
             prompt = f"""
             You are a top-tier management consultant and data analyst from McKinsey or Bain. Your job is to analyze the following metrics for two companies and provide a concise, hard-hitting strategic outlook.
 
@@ -106,10 +106,10 @@ def generate_strategic_response(company_a, company_b, metrics_a, metrics_b, ques
             End with a single recommended action for someone investing or advising in this space. 
             Write confidently, as an expert consultant. Avoid fluff.
             """
-            response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
-            if response.text:
+            response_text = gemini_generate_text(prompt, api_key=api_key)
+            if response_text:
                 logger.info("[strategy] Gemini response received")
-                return response.text.strip()
+                return response_text
         except Exception as e:
             logger.warning(f"[strategy] Gemini failed: {e}. Using fallback.")
 

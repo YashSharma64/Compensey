@@ -3,8 +3,9 @@ import numpy as np
 import os
 import logging
 from typing import List, Dict
-from google.genai import Client
 from dotenv import load_dotenv
+
+from app.services.gemini_langchain import gemini_generate_text
 from pathlib import Path
 
 load_dotenv()
@@ -49,7 +50,6 @@ def explain_decision(company_a: str, company_b: str, a_metrics: Dict, b_metrics:
     api_key = os.getenv("GEMINI_API_KEY")
     if api_key:
         try:
-            client = Client(api_key=api_key)
             prompt = f"""You are a data analyst at a top strategy consulting firm. Convert the following \
 machine learning model outputs into exactly 3 concise, professional bullet-point insights (plain text, no markdown).
 
@@ -68,9 +68,9 @@ Rules:
 3. Do NOT add any opinion or data not derived from the scores above.
 4. Keep language concise, professional, and grounded in the numbers.
 """
-            response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
-            if response.text and response.text.strip():
-                lines = [l.strip() for l in response.text.strip().splitlines() if l.strip()]
+            response_text = gemini_generate_text(prompt, api_key=api_key)
+            if response_text:
+                lines = [l.strip() for l in response_text.splitlines() if l.strip()]
                 if lines:
                     logger.info(f"[explain] Gemini returned {len(lines)} lines")
                     return lines[:3] if len(lines) >= 3 else lines
